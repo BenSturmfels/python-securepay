@@ -74,7 +74,7 @@ REQUESTTYPE = "Payment"
 TXNTYPE_PAYMENT = "0"
 TXNTYPE_REFUND = "4"
 TXNSOURCE_SECURE_XML = "23"
-CURRENCY = "XXX" # amount is specified in cents
+CURRENCY = "AUD" # amount is specified in cents
 GATEWAY_STATUS_CODE_NORMAL = '000'
 
 log = logging.getLogger(__name__)

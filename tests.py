@@ -5,7 +5,7 @@ import textwrap
 import pytz
 import unittest
 
-from __init__ import pay_by_cc, _pay_by_cc_xml, refund
+from securepay import pay_by_cc, _pay_by_cc_xml, refund
 
 class SecurePayTestCase(unittest.TestCase):
     def test_can_make_payment_and_refund(self):
