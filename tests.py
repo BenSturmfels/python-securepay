@@ -22,16 +22,16 @@ class SecurePayTestCase(unittest.TestCase):
             purchase_order_id='1234',
             cc_number='4444333322221111',
             cc_expiry='11/22',
-            merchant_id='BIV0128',
-            password='tNmpslUL')
+            merchant_id='MERCHANT ID',
+            password='PASSWORD')
         self.assertEquals(payment_response['approved'], True)
 
         refund_response = refund(
             cents='100',
             purchase_order_id='1234',
             transaction_id=payment_response['transaction_id'],
-            merchant_id='BIV0128',
-            password='tNmpslUL')
+            merchant_id='MERCHANT ID',
+            password='PASSWORD')
         self.assertEquals(refund_response['approved'], True)
 
 
