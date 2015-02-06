@@ -1,5 +1,5 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
-from codecs import open  # To use a consistent encoding
+#from codecs import open  # To use a consistent encoding
 from os import path
 
 here = path.abspath(path.dirname(__file__))
@@ -14,7 +14,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.1',
+    version='0.2',
 
     description='Python interface to the Securepay payment processor.',
     #long_description=long_description,
@@ -66,7 +66,7 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
     install_requires=[
-        'lxml>=3.3.5',
+        'lxml>=3.3.3',
         'pytz>=2012c',
     ],
 

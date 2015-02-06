@@ -1,13 +1,18 @@
-from __future__ import absolute_import
+# -*- coding: utf-8; -*-
+
+from __future__ import unicode_literals, absolute_import
 
 import datetime
 import textwrap
-import pytz
 import unittest
 
-from securepay import pay_by_cc, _pay_by_cc_xml, refund
+import pytz
+
+from securepay import pay_by_cc, refund
+from securepay.securepay import _pay_by_cc_xml
 
 class SecurePayTestCase(unittest.TestCase):
+    @unittest.skip("TODO: Mock live gateway for testing.")
     def test_can_make_payment_and_refund(self):
         """Test making a payment for $1 and refunding it.
 
@@ -24,7 +29,7 @@ class SecurePayTestCase(unittest.TestCase):
             cc_expiry='11/22',
             merchant_id='MERCHANT ID',
             password='PASSWORD')
-        self.assertEquals(payment_response['approved'], True)
+        self.assertEqual(payment_response['approved'], True)
 
         refund_response = refund(
             cents='100',
@@ -32,7 +37,7 @@ class SecurePayTestCase(unittest.TestCase):
             transaction_id=payment_response['transaction_id'],
             merchant_id='MERCHANT ID',
             password='PASSWORD')
-        self.assertEquals(refund_response['approved'], True)
+        self.assertEqual(refund_response['approved'], True)
 
 
     def test_payment_xml_matches_example(self):
@@ -50,7 +55,7 @@ class SecurePayTestCase(unittest.TestCase):
             password='PASSWORD',
             cc_holder='Test Person')
 
-        self.assertEquals(
+        self.assertEqual(
             xml,
             textwrap.dedent("""\
             <?xml version='1.0' encoding='UTF-8'?>
@@ -83,11 +88,10 @@ class SecurePayTestCase(unittest.TestCase):
                 </TxnList>
               </Payment>
             </SecurePayMessage>
-            """))
+            """).encode('utf-8'))
 
     def test_removes_non_digits_from_cc(self):
         """Check non-digits are stripped from the credit card number."""
-
         xml = _pay_by_cc_xml(
             timestamp=datetime.datetime(2012, 1, 1, tzinfo=pytz.timezone('UTC')),
             cents='100',
@@ -97,7 +101,20 @@ class SecurePayTestCase(unittest.TestCase):
             merchant_id='MERCHANT ID',
             password='PASSWORD')
 
-        self.assertIn('<cardNumber>4444333322221111</cardNumber>', xml)
+        self.assertIn(b'<cardNumber>4444333322221111</cardNumber>', xml)
+
+    def test_xml_generation_succeeds_when_cc_holder_has_unicode_symbol(self):
+        """Check XML is generated when cc_holder contains unicode symbols."""
+        xml = _pay_by_cc_xml(
+            timestamp=datetime.datetime(2012, 1, 1, tzinfo=pytz.timezone('UTC')),
+            cents='',
+            purchase_order_id='',
+            cc_number='',
+            cc_expiry='',
+            merchant_id='',
+            password='',
+            cc_holder='♥')
+        self.assertIn(b'<cardHolderName>\xe2\x99\xa5</cardHolderName>', xml)
 
 
 if __name__ == '__main__':
