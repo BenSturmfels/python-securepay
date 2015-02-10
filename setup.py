@@ -68,6 +68,7 @@ setup(
     install_requires=[
         'lxml>=3.3.3',
         'pytz>=2012c',
+        'future>=0.14.2',
     ],
 
     # If there are data files included in your packages that need to be
