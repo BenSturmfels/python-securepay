@@ -7,7 +7,48 @@
 This module doesn't yet provide credit card authorisation transactions (ie.
 putting some money on hold for an upcoming payment).
 
-TODO:
+Quickstart
+-----------
+
+This package can be used as follows::
+
+    from securepay import pay_by_cc, refund, SecurePayError
+
+    SECUREPAY_API_URL= 'https://test.securepay.com.au/xmlapi/payment'
+    SECUREPAY_MERCHANT_ID = '...'
+    SECUREPAY_PASSWORD = '...'
+
+    # Take a credit card payment.
+    try:
+        pay_attempt = pay_by_cc(
+            cents, purchase_order_id, cc_number, cc_expiry,
+            SECUREPAY_API_URL, SECUREPAY_MERCHANT_ID,
+            SECUREPAY_PASSWORD, cc_card_name)
+    except SecurePayError as err:
+        # Give customers a generic error about service being unavailable.
+
+    if pay_attempt['approved']:
+        # Payment successful!
+    else:
+        # Payment declined. Error message is in pay_attempt['bank_response_text']
+
+
+    # Refund the payment.
+    try:
+        refund_attempt = securepay.refund(
+            cents, purchase_order_id, transaction_ref, SECUREPAY_API_URL,
+            SECUREPAY_MERCHANT_ID, SECUREPAY_PASSWORD)
+    except SecurePayError as err:
+        # Give staff member a generic error about service being unavailable.
+
+    if pay_attempt['approved']:
+        # Refund successful!
+    else:
+        # Refund declined. Error message is in pay_attempt['bank_response_text']
+
+
+TODO
+-----
 
 * remove dependency on pytz
 * make payments live by default
