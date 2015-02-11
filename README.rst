@@ -10,11 +10,10 @@ putting some money on hold for an upcoming payment).
 TODO:
 
 * remove dependency on pytz
-* may payments live by default
+* make payments live by default
 * display warnings for error code payments against debug
 * add credit authorisation
-* decide whether to test against live or mock it, separate integration tests?
+* update tests to mock out live gateway
   public testing account?
-* Python 3 support
-* add awesome logging
+* add detailed logging
 * merge in reconciliation tool
