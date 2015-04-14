@@ -14,13 +14,13 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.3',
+    version='0.4',
 
     description='Python interface to the Securepay payment processor.',
     #long_description=long_description,
 
     # The project's main homepage.
-    url='https://gitorious.org/python-securepay',
+    url='https://gitlab.com/Sturm/python-securepay',
 
     # Author details
     author='Ben Sturmfels',
