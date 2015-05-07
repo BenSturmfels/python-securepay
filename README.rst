@@ -47,15 +47,16 @@ This package can be used as follows::
         # Refund declined. Error message is in pay_attempt['bank_response_text']
 
 
-TODO
+To Do
 -----
 
-* remove dependency on pytz
-* make payments live by default
+* remove dependency on `PyTZ`
+* remove dependency on `LXML`
 * display warnings for error code payments against debug
 * add credit authorisation
 * update tests to mock out live gateway
-  public testing account?
 * add detailed logging
 * merge in reconciliation tool
+* return payment date, usually current day, but if after 10pm AEST is the
+  following day - help with reporting and reconciliation
 
