@@ -106,6 +106,8 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                               old_div(timestamp.utcoffset().total_seconds(), 60))
     #timestamp = '%s' % (timestamp.strftime("%Y%d%m%H%M"))
 
+    cents = str(cents)
+
     # cc_numbers with non-digits are ok, just strip them out
     cc_number = ''.join([i for i in cc_number if i.isdigit()])
 
