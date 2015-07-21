@@ -1,10 +1,3 @@
-from __future__ import unicode_literals
-from __future__ import division
-from builtins import str
-from past.utils import old_div
-from future import standard_library
-standard_library.install_aliases()
-
 """
 Process and refund credit card payments through SecurePay
 
@@ -66,7 +59,22 @@ TXNSOURCE_SECURE_XML = "23"
 CURRENCY = "AUD" # amount is specified in cents
 GATEWAY_STATUS_CODE_NORMAL = '000'
 
-log = logging.getLogger(__name__)
+logger = logging.getLogger(__name__)
+
+class SecurePayError(Exception):
+    """Represents a fatal error preventing processing of the payment."""
+    pass
+
+
+class GatewayError(SecurePayError):
+    """The payment service is broken."""
+    pass
+
+
+class PaymentError(SecurePayError):
+    """This payment was declined."""
+    pass
+
 
 def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
               api_url, merchant_id, password, cc_holder=''):
@@ -78,21 +86,17 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
     Cents isn't user-friendly.
 
     """
-    print("------------------------------------------")
-    print(merchant_id)
-    print("------------------------------------------")
     timestamp = datetime.datetime.now(tz=pytz.timezone('UTC'))
-
     xml = _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                          cc_expiry, merchant_id, password, cc_holder)
-
     try:
         response_xml = urllib.request.urlopen(api_url, xml).read()
     except urllib.error.URLError as err:
-        raise SecurePayError(err)
+        raise GatewayError(err)
     response = _parse_response(response_xml)
-    log.debug(response)
+    logger.debug(response)
     return response
+
 
 def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                    cc_expiry, merchant_id, password, cc_holder=''):
@@ -103,8 +107,7 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
 
     """
     timestamp = '%s%+04.f' % (timestamp.strftime("%Y%d%m%H%M%S000000"),
-                              old_div(timestamp.utcoffset().total_seconds(), 60))
-    #timestamp = '%s' % (timestamp.strftime("%Y%d%m%H%M"))
+                              timestamp.utcoffset().total_seconds() / 60)
 
     cents = str(cents)
 
@@ -142,11 +145,12 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                      encoding="UTF-8")
 
     # Log XML with credit card number masked
-    log.debug(re.sub(b'<cardNumber>(\d{6})\d{7}(\d{3})</cardNumber>',
+    logger.debug(re.sub(b'<cardNumber>(\d{6})\d{7}(\d{3})</cardNumber>',
                      b'<cardNumber>\\1...\\2</cardNumber>',
                      xml))
 
     return xml
+
 
 def refund(cents, purchase_order_id, transaction_id,
            api_url, merchant_id, password):
@@ -160,19 +164,20 @@ def refund(cents, purchase_order_id, transaction_id,
     """
     xml = _refund_xml(cents, purchase_order_id, transaction_id,
                        merchant_id, password)
-    log.debug(xml)
+    logger.debug(xml)
     try:
         response_xml = urllib.request.urlopen(api_url, xml).read()
     except urllib.error.URLError as err:
-        raise SecurePayError(err)
+        raise GatewayError(err)
     response = _parse_response(response_xml)
-    log.debug(response)
+    logger.debug(response)
     return response
+
 
 def _refund_xml(cents, purchase_order_id, transaction_id,
                  merchant_id, password):
     """Generate XML for a SecurePay refund request."""
-    tz = "%+d" % (old_div(time.timezone, -60))
+    tz = "%+d" % (time.timezone / -60)
     timestamp = time.strftime("%Y%d%m%H%M%S000000") + tz
     cents = str(cents)
     purchase_order_id = str(purchase_order_id)
@@ -205,17 +210,12 @@ def _refund_xml(cents, purchase_order_id, transaction_id,
                      encoding="UTF-8")
 
 
-class SecurePayError(Exception):
-    """Represents a fatal error preventing processing of the payment."""
-    pass
-
-
 def _parse_response(response_xml):
     """Parse the response from SecurePay web service."""
     try:
         response = etree.XML(response_xml)
     except etree.XMLSyntaxError:
-        raise SecurePayError("XML syntax error in response from payment gateway. Here's the first 500 characters:\n%s" % response_xml[:500])
+        raise GatewayError("XML syntax error in response from payment gateway. Here's the first 500 characters:\n%s" % response_xml[:500])
     gateway_status_code = response.xpath('.//statusCode')[0].text
     gateway_status_description = response.xpath('.//statusDescription')[0].text
     if gateway_status_code == GATEWAY_STATUS_CODE_NORMAL:
@@ -225,7 +225,11 @@ def _parse_response(response_xml):
             'bank_response_text': response.xpath('.//responseText')[0].text,
             'transaction_id': response.xpath('.//txnID')[0].text}
     else:
-        raise SecurePayError("Payment gateway error %s: %s."
-                        % (gateway_status_code, gateway_status_description))
-    log.debug(etree.tostring(response, pretty_print=True))
-    return response_dict
+        raise GatewayError("Payment gateway error {}: {}.".format(
+            gateway_status_code, gateway_status_description))
+    logger.debug(etree.tostring(response, pretty_print=True))
+
+    if not response_dict['approved']:
+        raise PaymentError(response_dict['bank_response_text'])
+    else:
+        return response_dict
