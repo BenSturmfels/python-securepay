@@ -14,7 +14,7 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.5.3',
+    version='0.5.4',
 
     description='Python interface to the Securepay credit card payment gateway.',
     #long_description=long_description,
@@ -39,7 +39,7 @@ setup(
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
-        'Topic :: Software Development :: Build Tools',
+        'Topic :: Office/Business :: Financial'
 
         # Pick your license as you wish (should match "license" above)
         'License :: OSI Approved :: Apache Software License',
