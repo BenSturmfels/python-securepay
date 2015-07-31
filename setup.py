@@ -14,9 +14,9 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.5.0',
+    version='0.5.2',
 
-    description='Python interface to the Securepay payment processor.',
+    description='Python interface to the Securepay credit card payment gateway.',
     #long_description=long_description,
 
     # The project's main homepage.
@@ -55,7 +55,7 @@ setup(
     ],
 
     # What does your project relate to?
-    keywords='e-commerce credit card gateway',
+    #keywords='e-commerce credit card gateway',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
@@ -68,7 +68,6 @@ setup(
     install_requires=[
         'lxml>=3.3.3',
         'pytz>=2012c',
-        'future>=0.14.2',
     ],
 
     # If there are data files included in your packages that need to be
