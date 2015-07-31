@@ -35,7 +35,7 @@ setup(
         #   3 - Alpha
         #   4 - Beta
         #   5 - Production/Stable
-        'Development Status :: 4 - Beta',
+        'Development Status :: 5 - Production/Stable',
 
         # Indicate who your project is intended for
         'Intended Audience :: Developers',
@@ -55,7 +55,7 @@ setup(
     ],
 
     # What does your project relate to?
-    #keywords='sample setuptools development',
+    keywords='e-commerce credit card gateway',
 
     # You can just specify the packages manually here if your project is
     # simple. Or you can use find_packages().
