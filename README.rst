@@ -11,7 +11,7 @@ putting some money on hold for an upcoming payment).
 Quickstart
 -----------
 
-This package can be used as follows::
+This package can be used as follows:
 
 .. code-block:: python
 
