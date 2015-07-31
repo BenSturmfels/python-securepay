@@ -13,6 +13,8 @@ Quickstart
 
 This package can be used as follows::
 
+.. code-block:: python
+
     import securepay
 
     SECUREPAY_API_URL= 'https://test.securepay.com.au/xmlapi/payment'
