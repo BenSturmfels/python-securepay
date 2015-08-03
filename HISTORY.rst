@@ -15,5 +15,5 @@ Release History
 
 **Bug fixes**
 
- - Fixed support for Python 2.7
+ - Fixed support for Python 2.7.
  - Enabled tests for Python 2.7, 3.3 and 3.4 with Tox
