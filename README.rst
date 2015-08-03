@@ -43,6 +43,13 @@ This package can be used as follows:
         # Refund successful! Details in refund_response.
 
 
+To run the tests:
+
+.. code-block:: bash
+
+    $ tox
+
+
 This module doesn't yet provide credit card authorisation transactions (ie.
 putting some money on hold for an upcoming payment). If you're interesting in
 funding some work to add these features, please get in touch.
