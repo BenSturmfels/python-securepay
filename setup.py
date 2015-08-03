@@ -66,8 +66,9 @@ setup(
     # requirements files see:
     # https://packaging.python.org/en/latest/technical.html#install-requires-vs-requirements-files
     install_requires=[
+        # TODO: Remove duplication of dependencies between setup.py and tox.ini.
         'lxml>=3.3.3',
-        'pytz>=2012c',
+        'future>=0.14.3',
     ],
 
     # If there are data files included in your packages that need to be

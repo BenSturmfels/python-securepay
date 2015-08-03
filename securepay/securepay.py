@@ -40,15 +40,16 @@ SecurePay documentation is here:
 http://www.securepay.com.au/resources/Secure_XML_API_Integration_Guide.pdf
 http://www.securepay.com.au/resources/SecurePay_Response_Codes.pdf
 """
+from future.standard_library import install_aliases
+install_aliases()
+
 import datetime
 import logging
 import re
-import time
 import urllib.request, urllib.parse, urllib.error
 
 from lxml import etree
 from lxml.builder import E
-import pytz
 
 TIMEOUT = "60"
 APIVERSION = "xml-4.2"
@@ -86,9 +87,11 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
     Cents isn't user-friendly.
 
     """
-    timestamp = datetime.datetime.now(tz=pytz.timezone('UTC'))
-    xml = _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
-                         cc_expiry, merchant_id, password, cc_holder)
+    timestamp = datetime.datetime.utcnow()
+    xml = _pay_by_cc_xml(
+        timestamp, cents, purchase_order_id, cc_number, cc_expiry, merchant_id,
+        password, cc_holder)
+    logger.debug(xml)
     try:
         response_xml = urllib.request.urlopen(api_url, xml).read()
     except urllib.error.URLError as err:
@@ -162,8 +165,10 @@ def refund(cents, purchase_order_id, transaction_id,
     Cents isn't user-friendly.
 
     """
-    xml = _refund_xml(cents, purchase_order_id, transaction_id,
-                       merchant_id, password)
+    timestamp = datetime.datetime.utcnow()
+    xml = _refund_xml(
+        timestamp, cents, purchase_order_id, transaction_id, merchant_id,
+        password)
     logger.debug(xml)
     try:
         response_xml = urllib.request.urlopen(api_url, xml).read()
@@ -174,11 +179,12 @@ def refund(cents, purchase_order_id, transaction_id,
     return response
 
 
-def _refund_xml(cents, purchase_order_id, transaction_id,
+def _refund_xml(timestamp, cents, purchase_order_id, transaction_id,
                  merchant_id, password):
     """Generate XML for a SecurePay refund request."""
-    tz = "%+d" % (time.timezone / -60)
-    timestamp = time.strftime("%Y%d%m%H%M%S000000") + tz
+    timestamp = '%s%+04.f' % (timestamp.strftime("%Y%d%m%H%M%S000000"),
+                              timestamp.utcoffset().total_seconds() / 60)
+
     cents = str(cents)
     purchase_order_id = str(purchase_order_id)
     transaction_id = str(transaction_id)
