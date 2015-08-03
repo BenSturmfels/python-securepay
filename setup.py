@@ -1,12 +1,14 @@
 from setuptools import setup, find_packages  # Always prefer setuptools over distutils
-#from codecs import open  # To use a consistent encoding
+from codecs import open  # To use a consistent encoding
 from os import path
 
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
-# with open(path.join(here, 'DESCRIPTION.rst'), encoding='utf-8') as f:
-#     long_description = f.read()
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
+with open(path.join(here, 'HISTORY.rst'), encoding='utf-8') as f:
+    long_description += '\n\n' + f.read()
 
 setup(
     name='securepay',
@@ -14,10 +16,10 @@ setup(
     # Versions should comply with PEP440.  For a discussion on single-sourcing
     # the version across setup.py and the project code, see
     # http://packaging.python.org/en/latest/tutorial.html#version
-    version='0.5.6',
+    version='0.5.7',
 
-    description='Python interface to the Securepay credit card payment gateway.',
-    #long_description=long_description,
+    description='Python interface to the Securepay credit card gateway.',
+    long_description=long_description,
 
     # The project's main homepage.
     url='https://gitlab.com/Sturm/python-securepay',

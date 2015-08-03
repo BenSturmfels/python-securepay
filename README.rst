@@ -2,8 +2,8 @@
  Python Securepay
 ==================
 
-`securepay` is a Python interface to the Securepay credit card payment gateway.
-
+SecurePay in an Australian payment gateway provider. This library can be used to
+request and refund payment on demand.
 
 Quickstart
 -----------
@@ -14,35 +14,33 @@ This package can be used as follows:
 
     import securepay
 
-    SECUREPAY_API_URL= 'https://test.securepay.com.au/xmlapi/payment'
-    SECUREPAY_MERCHANT_ID = '...'
-    SECUREPAY_PASSWORD = '...'
+    MERCHANT_ID = '...'
+    PASSWORD = '...'
 
     # Take a credit card payment.
     try:
-        response = securepay.pay_by_cc(
-            cents, purchase_order_id, cc_number, cc_expiry,
-            SECUREPAY_API_URL, SECUREPAY_MERCHANT_ID,
-            SECUREPAY_PASSWORD, cc_card_name)
+        pay_response = securepay.pay_by_cc(
+            200, 'PO-1234', '4444333322221111', '11/18',
+            securepay.TEST_API_URL, MERCHANT_ID, PASSWORD, 'J. Citizen')
     except securepay.GatewayError as err:
-        # Service unavailable. Give customers a generic error.
+        # Service unavailable. Log err and give customers a generic error.
     except securepay.PaymentError as err:
         # Payment declined. Error message is in err.
     else:
-        # Payment successful! Details in response.
+        # Payment successful! Details in pay_response.
 
 
     # Refund the payment.
     try:
-        response = securepay.refund(
-            cents, purchase_order_id, transaction_ref, SECUREPAY_API_URL,
-            SECUREPAY_MERCHANT_ID, SECUREPAY_PASSWORD)
+        refund_response = securepay.refund(
+            200, 'PO-1234', pay_response['transaction_id'],
+            securepay.TEST_API_URL, MERCHANT_ID, PASSWORD)
     except securepay.GatewayError as err:
-        # Service unavailable. Give customers a generic error.
+        # Service unavailable. Log err and give customers a generic error.
     except securepay.PaymentError as err:
         # Refund declined. Error message is in err.
     else:
-        # Refund successful! Details in response.
+        # Refund successful! Details in refund_response.
 
 
 This module doesn't yet provide credit card authorisation transactions (ie.

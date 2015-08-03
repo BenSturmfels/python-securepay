@@ -6,52 +6,9 @@ import datetime
 import textwrap
 import unittest
 
-from securepay import pay_by_cc, refund
-from securepay.securepay import _pay_by_cc_xml, _refund_xml
-
-
-class UTCTimezone(datetime.tzinfo):
-    """Python 2.7 compatible replacement for datetime.timezone.utc.
-
-    We could just depend on pytz, but I'd prefer not to.
-
-    """
-    def dst(self, dt):
-        return None
-
-    def utcoffset(self, dt):
-        return datetime.timedelta(0)
-
+from securepay.securepay import UTCTimezone, _pay_by_cc_xml, _refund_xml
 
 class PaymentTestCase(unittest.TestCase):
-    @unittest.skip("TODO: Mock live gateway for testing.")
-    def test_can_make_payment_and_refund(self):
-        """Test making a payment for $1 and refunding it.
-
-        Requires valid test gateway API credentials is local_settings.py. If
-        you're not connected to the Internet or running against the live gateway
-        API, this test will fail. Yes, I realise that's a bit of a pain, but I
-        think having some test coverage here trumps the inconvenience caused.
-
-        """
-        payment_response = pay_by_cc(
-            cents='100',
-            purchase_order_id='1234',
-            cc_number='4444333322221111',
-            cc_expiry='11/22',
-            merchant_id='MERCHANT ID',
-            password='PASSWORD')
-        self.assertEqual(payment_response['approved'], True)
-
-        refund_response = refund(
-            cents='100',
-            purchase_order_id='1234',
-            transaction_id=payment_response['transaction_id'],
-            merchant_id='MERCHANT ID',
-            password='PASSWORD')
-        self.assertEqual(refund_response['approved'], True)
-
-
     def test_payment_xml_matches_example(self):
         """Check that the credit card XML output looks correct."""
 

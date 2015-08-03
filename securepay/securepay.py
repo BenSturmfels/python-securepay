@@ -1,10 +1,9 @@
-"""
-Process and refund credit card payments through SecurePay
+"""Process and refund credit card payments through SecurePay
 
 Both pay_by_cc and refund take a "purchase_order_id". This represents the
-business's identifier for the transaction, such as the invoice number. If
-you're making a refund, the "purchase_order_id" must be the same as the
-original payment.
+business's identifier for the transaction, such as the invoice number. If you're
+making a refund, the "purchase_order_id" must be the same as the original
+payment.
 
 Both pay_by_cc and refund return a dictionary of:
  - approved: boolean as to whether transaction was approved
@@ -12,33 +11,37 @@ Both pay_by_cc and refund return a dictionary of:
  - bank_response_text: textual response from bank
  - transaction_id: bank's identifier for transaction
 
-When checking the response, if "approved" is True, you're done. Otherwise,
-tell the user their transaction failed and display "bank_response_text".
+When checking the response, if "approved" is True, you're done. Otherwise, tell
+the user their transaction failed and display "bank_response_text".
 
-Store the "transaction_id" of payments so you can make a refund or look up
-the transaction later on.
+Store the "transaction_id" of payments so you can make a refund or look up the
+transaction later on.
 
 For testing credentials, see the local_settings.py.template.
 
-NOTE: The testing gateway only approves payments amounts ending in 00, 08 or 77 (for ANZ). All other amounts will trigger the bank response code indicated by that number (see response codes document). This is not documented in the Integration Guide.
+NOTE: The testing gateway only approves payments amounts ending in 00, 08 or 77
+(for ANZ). All other amounts will trigger the bank response code indicated by
+that number (see response codes document). This is not documented in the
+Integration Guide.
 
 SecurePay write:
-    Use Visa card number 4444333322221111, and a valid expiry date
-    (E.g. 10/08) to initiate test payments.
 
-    The amount processed when testing dictates the transaction
-    response:
+    Use Visa card number 4444333322221111, and a valid expiry date (E.g. 10/08)
+    to initiate test payments.
+
+    The amount processed when testing dictates the transaction response:
 
     Approved: Amounts ending with 00, 08 (and 77 for ANZ).
 
     For example, $1.00. $12.08 are approved.
 
-    Declined: Amounts ending in all other two digit combinations will
-    be declined with the matching bank codes (01-07, 09-76, 78-99).
+    Declined: Amounts ending in all other two digit combinations will be
+    declined with the matching bank codes (01-07, 09-76, 78-99).
 
 SecurePay documentation is here:
 http://www.securepay.com.au/resources/Secure_XML_API_Integration_Guide.pdf
 http://www.securepay.com.au/resources/SecurePay_Response_Codes.pdf
+
 """
 from future.standard_library import install_aliases
 install_aliases()
@@ -50,6 +53,9 @@ import urllib.request, urllib.parse, urllib.error
 
 from lxml import etree
 from lxml.builder import E
+
+LIVE_API_URL = 'https://api.securepay.com.au/xmlapi/payment'
+TEST_API_URL = 'https://test.securepay.com.au/xmlapi/payment'
 
 TIMEOUT = "60"
 APIVERSION = "xml-4.2"
@@ -77,6 +83,19 @@ class PaymentError(SecurePayError):
     pass
 
 
+class UTCTimezone(datetime.tzinfo):
+    """Python 2.7 compatible replacement for datetime.timezone.utc.
+
+    We could just depend on pytz, but I'd prefer not to.
+
+    """
+    def dst(self, dt):
+        return datetime.timedelta(0)
+
+    def utcoffset(self, dt):
+        return datetime.timedelta(0)
+
+
 def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
               api_url, merchant_id, password, cc_holder=''):
     """Process a credit card payment through SecurePay.
@@ -87,7 +106,7 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
     Cents isn't user-friendly.
 
     """
-    timestamp = datetime.datetime.utcnow()
+    timestamp = datetime.datetime.now(UTCTimezone())
     xml = _pay_by_cc_xml(
         timestamp, cents, purchase_order_id, cc_number, cc_expiry, merchant_id,
         password, cc_holder)
@@ -165,7 +184,7 @@ def refund(cents, purchase_order_id, transaction_id,
     Cents isn't user-friendly.
 
     """
-    timestamp = datetime.datetime.utcnow()
+    timestamp = datetime.datetime.now(UTCTimezone())
     xml = _refund_xml(
         timestamp, cents, purchase_order_id, transaction_id, merchant_id,
         password)
