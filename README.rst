@@ -17,7 +17,7 @@ This package can be used as follows:
     MERCHANT_ID = '...'
     PASSWORD = '...'
 
-    # Take a credit card payment.
+    # Take a $2 AUD credit card payment.
     try:
         pay_response = securepay.pay_by_cc(
             200, 'PO-1234', '4444333322221111', '11/18',
@@ -30,7 +30,7 @@ This package can be used as follows:
         # Payment successful! Details in pay_response.
 
 
-    # Refund the payment.
+    # Refund the payment above in full.
     try:
         refund_response = securepay.refund(
             200, 'PO-1234', pay_response['transaction_id'],
