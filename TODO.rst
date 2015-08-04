@@ -2,7 +2,6 @@
 TODO
 =====
 
-* remove dependency on `PyTZ`
 * remove dependency on `LXML`
 * display warnings for error code payments against debug
 * add credit authorisation
