@@ -6,9 +6,8 @@ here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the relevant file
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-    long_description = f.read()
-with open(path.join(here, 'HISTORY.rst'), encoding='utf-8') as f:
-    long_description += '\n\n' + f.read()
+    with open(path.join(here, 'HISTORY.rst'), encoding='utf-8') as g:
+        long_description = f.read() + '\n\n' + g.read()
 
 setup(
     name='securepay',
