@@ -17,7 +17,7 @@ setup(
     version='0.5.7',
     description='Interface to the Securepay credit card gateway.',
     long_description=long_description,
-    url='https://gitlab.com/Sturm/python-securepay',
+    url='https://gitlab.com/Boojum/python-securepay',
     author='Ben Sturmfels',
     author_email='ben@sturm.com.au',
     license='Apache License, Version 2.0',
