@@ -24,9 +24,8 @@ class PaymentTestCase(unittest.TestCase):
             password='PASSWORD',
             cc_holder='Test Person')
 
-        self.assertEqual(
-            xml,
-            textwrap.dedent("""\
+        clean_xml = str(xml.decode('utf-8')).split(' \t\n\r')
+        clean_test_xml = str(textwrap.dedent("""\
             <?xml version='1.0' encoding='UTF-8'?>
             <SecurePayMessage>
               <MessageInfo>
@@ -47,6 +46,7 @@ class PaymentTestCase(unittest.TestCase):
                     <txnSource>23</txnSource>
                     <amount>100</amount>
                     <currency>AUD</currency>
+                    <recurring>no</recurring>
                     <purchaseOrderNo>1234</purchaseOrderNo>
                     <CreditCardInfo>
                       <cardNumber>4444333322221111</cardNumber>
@@ -57,7 +57,11 @@ class PaymentTestCase(unittest.TestCase):
                 </TxnList>
               </Payment>
             </SecurePayMessage>
-            """).encode('utf-8'))
+            """)).split(' \t\n\r')
+
+        self.assertEqual(
+            clean_xml,
+            clean_test_xml)
 
     def test_removes_non_digits_from_cc(self):
         """Check non-digits are stripped from the credit card number."""
