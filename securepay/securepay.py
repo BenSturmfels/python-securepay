@@ -60,6 +60,7 @@ TEST_API_URL = 'https://test.securepay.com.au/xmlapi/payment'
 TIMEOUT = "60"
 APIVERSION = "xml-4.2"
 REQUESTTYPE = "Payment"
+RECURRING = "Recurring"
 TXNTYPE_PAYMENT = "0"
 TXNTYPE_REFUND = "4"
 TXNSOURCE_SECURE_XML = "23"
@@ -97,7 +98,7 @@ class UTCTimezone(datetime.tzinfo):
 
 
 def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
-              api_url, merchant_id, password, cc_holder=''):
+              api_url, merchant_id, password, cc_holder='', recurring=False):
     """Process a credit card payment through SecurePay.
 
     Parameter and return value are described in module documentation.
@@ -106,10 +107,15 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
     Cents isn't user-friendly.
 
     """
+    if recurring:
+        recurring = "yes"
+    else:
+        recurring = "no"
+
     timestamp = datetime.datetime.now(UTCTimezone())
     xml = _pay_by_cc_xml(
         timestamp, cents, purchase_order_id, cc_number, cc_expiry, merchant_id,
-        password, cc_holder)
+        password, cc_holder, recurring)
     logger.debug(xml)
     try:
         response_xml = urllib.request.urlopen(api_url, xml).read()
@@ -121,7 +127,7 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
 
 
 def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
-                   cc_expiry, merchant_id, password, cc_holder=''):
+                   cc_expiry, merchant_id, password, cc_holder='', recurring="no"):
     """Generate XML for a SecurePay payment.
 
     The SecurePay documentation is ambiguous as to whether the timezone is zero
@@ -155,6 +161,7 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                         E.txnSource(TXNSOURCE_SECURE_XML),
                         E.amount(cents),
                         E.currency(CURRENCY),
+                        E.recurring(recurring),
                         E.purchaseOrderNo(purchase_order_id),
                         E.CreditCardInfo(
                             E.cardNumber(cc_number),
