@@ -60,7 +60,6 @@ TEST_API_URL = 'https://test.securepay.com.au/xmlapi/payment'
 TIMEOUT = "60"
 APIVERSION = "xml-4.2"
 REQUESTTYPE = "Payment"
-RECURRING = "Recurring"
 TXNTYPE_PAYMENT = "0"
 TXNTYPE_REFUND = "4"
 TXNSOURCE_SECURE_XML = "23"
@@ -101,17 +100,14 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
               api_url, merchant_id, password, cc_holder='', recurring=False):
     """Process a credit card payment through SecurePay.
 
-    Parameter and return value are described in module documentation.
+    Parameter and return value are described in module documentation. Note that
+    recurring does not automate transaction processing, rather alters the bank's
+    authorisation process, typically ignorring expiry date and CVV.
 
     TODO: Should probably just take a decimal.Decimal for the payment amount.
     Cents isn't user-friendly.
 
     """
-    if recurring:
-        recurring = "yes"
-    else:
-        recurring = "no"
-
     timestamp = datetime.datetime.now(UTCTimezone())
     xml = _pay_by_cc_xml(
         timestamp, cents, purchase_order_id, cc_number, cc_expiry, merchant_id,
@@ -127,7 +123,7 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
 
 
 def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
-                   cc_expiry, merchant_id, password, cc_holder='', recurring="no"):
+                   cc_expiry, merchant_id, password, cc_holder='', recurring=False):
     """Generate XML for a SecurePay payment.
 
     The SecurePay documentation is ambiguous as to whether the timezone is zero
@@ -138,6 +134,8 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                               timestamp.utcoffset().total_seconds() / 60)
 
     cents = str(cents)
+
+    recurring = 'yes' if recurring else 'no'
 
     # cc_numbers with non-digits are ok, just strip them out
     cc_number = ''.join([i for i in cc_number if i.isdigit()])

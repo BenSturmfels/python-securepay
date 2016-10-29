@@ -1,6 +1,16 @@
 Release History
 ---------------
 
+0.6.0 (2016-10-29)
+++++++++++++++++++
+
+**Improvements**
+
+ - Add the optional ``recurring`` field to payment requests (Greg McCoy). Note:
+   This does not automate transaction processing. See the ``pay_by_cc`` function
+   docstring and SecurePay docs for details.
+
+
 0.5.7 (2015-08-03)
 ++++++++++++++++++
 

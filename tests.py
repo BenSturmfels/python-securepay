@@ -24,8 +24,10 @@ class PaymentTestCase(unittest.TestCase):
             password='PASSWORD',
             cc_holder='Test Person')
 
-        clean_xml = str(xml.decode('utf-8')).split(' \t\n\r')
-        clean_test_xml = str(textwrap.dedent("""\
+
+        self.assertEqual(
+            xml,
+            textwrap.dedent("""\
             <?xml version='1.0' encoding='UTF-8'?>
             <SecurePayMessage>
               <MessageInfo>
@@ -57,11 +59,7 @@ class PaymentTestCase(unittest.TestCase):
                 </TxnList>
               </Payment>
             </SecurePayMessage>
-            """)).split(' \t\n\r')
-
-        self.assertEqual(
-            clean_xml,
-            clean_test_xml)
+            """).encode('utf-8'))
 
     def test_removes_non_digits_from_cc(self):
         """Check non-digits are stripped from the credit card number."""
@@ -88,6 +86,20 @@ class PaymentTestCase(unittest.TestCase):
             password='',
             cc_holder='♥')
         self.assertIn(b'<cardHolderName>\xe2\x99\xa5</cardHolderName>', xml)
+
+    def test_recurring_field_set(self):
+        """Check that a recurring=True comes through as 'yes'."""
+        xml = _pay_by_cc_xml(
+            timestamp=datetime.datetime(2012, 1, 1, tzinfo=UTCTimezone()),
+            cents='100',
+            purchase_order_id='1234',
+            cc_number='4444333322221111',
+            cc_expiry='11/22',
+            merchant_id='MERCHANT ID',
+            password='PASSWORD',
+            cc_holder='Test Person',
+            recurring=True)
+        self.assertIn(b'<recurring>yes</recurring>', xml)
 
 
 class RefundTestCase(unittest.TestCase):
