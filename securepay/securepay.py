@@ -97,10 +97,12 @@ class UTCTimezone(datetime.tzinfo):
 
 
 def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
-              api_url, merchant_id, password, cc_holder=''):
+              api_url, merchant_id, password, cc_holder='', recurring=False):
     """Process a credit card payment through SecurePay.
 
-    Parameter and return value are described in module documentation.
+    Parameter and return value are described in module documentation. Note that
+    recurring does not automate transaction processing, rather alters the bank's
+    authorisation process, typically ignorring expiry date and CVV.
 
     TODO: Should probably just take a decimal.Decimal for the payment amount.
     Cents isn't user-friendly.
@@ -109,7 +111,7 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
     timestamp = datetime.datetime.now(UTCTimezone())
     xml = _pay_by_cc_xml(
         timestamp, cents, purchase_order_id, cc_number, cc_expiry, merchant_id,
-        password, cc_holder)
+        password, cc_holder, recurring)
     logger.debug(xml)
     try:
         response_xml = urllib.request.urlopen(api_url, xml).read()
@@ -121,7 +123,7 @@ def pay_by_cc(cents, purchase_order_id, cc_number, cc_expiry,
 
 
 def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
-                   cc_expiry, merchant_id, password, cc_holder=''):
+                   cc_expiry, merchant_id, password, cc_holder='', recurring=False):
     """Generate XML for a SecurePay payment.
 
     The SecurePay documentation is ambiguous as to whether the timezone is zero
@@ -132,6 +134,8 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                               timestamp.utcoffset().total_seconds() / 60)
 
     cents = str(cents)
+
+    recurring = 'yes' if recurring else 'no'
 
     # cc_numbers with non-digits are ok, just strip them out
     cc_number = ''.join([i for i in cc_number if i.isdigit()])
@@ -155,6 +159,7 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                         E.txnSource(TXNSOURCE_SECURE_XML),
                         E.amount(cents),
                         E.currency(CURRENCY),
+                        E.recurring(recurring),
                         E.purchaseOrderNo(purchase_order_id),
                         E.CreditCardInfo(
                             E.cardNumber(cc_number),

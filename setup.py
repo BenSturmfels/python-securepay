@@ -14,7 +14,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='securepay',
-    version='0.5.7',
+    version='0.6.0',
     description='Interface to the Securepay credit card gateway.',
     long_description=long_description,
     url='https://gitlab.com/Boojum/python-securepay',

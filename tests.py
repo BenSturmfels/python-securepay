@@ -24,6 +24,7 @@ class PaymentTestCase(unittest.TestCase):
             password='PASSWORD',
             cc_holder='Test Person')
 
+
         self.assertEqual(
             xml,
             textwrap.dedent("""\
@@ -47,6 +48,7 @@ class PaymentTestCase(unittest.TestCase):
                     <txnSource>23</txnSource>
                     <amount>100</amount>
                     <currency>AUD</currency>
+                    <recurring>no</recurring>
                     <purchaseOrderNo>1234</purchaseOrderNo>
                     <CreditCardInfo>
                       <cardNumber>4444333322221111</cardNumber>
@@ -84,6 +86,20 @@ class PaymentTestCase(unittest.TestCase):
             password='',
             cc_holder='♥')
         self.assertIn(b'<cardHolderName>\xe2\x99\xa5</cardHolderName>', xml)
+
+    def test_recurring_field_set(self):
+        """Check that a recurring=True comes through as 'yes'."""
+        xml = _pay_by_cc_xml(
+            timestamp=datetime.datetime(2012, 1, 1, tzinfo=UTCTimezone()),
+            cents='100',
+            purchase_order_id='1234',
+            cc_number='4444333322221111',
+            cc_expiry='11/22',
+            merchant_id='MERCHANT ID',
+            password='PASSWORD',
+            cc_holder='Test Person',
+            recurring=True)
+        self.assertIn(b'<recurring>yes</recurring>', xml)
 
 
 class RefundTestCase(unittest.TestCase):
