@@ -1,6 +1,14 @@
 Release History
 ---------------
 
+Unreleased
+++++++++++
+
+**Improvements**
+
+ - Add GitLab continuous integration script to run tox tests.
+
+
 0.6.0 (2016-10-29)
 ++++++++++++++++++
 
