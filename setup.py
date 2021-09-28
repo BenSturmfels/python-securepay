@@ -14,7 +14,7 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='securepay',
-    version='0.6.1',
+    version='0.6.2',
     description='Interface to the Securepay credit card gateway.',
     long_description=long_description,
     url='https://github.com/BenSturmfels/python-securepay',
@@ -38,7 +38,7 @@ setup(
         'future>=0.14.3',
     ],
     project_urls={
-        'Source': 'https://gitlab.com/BenSturmfels/python-securepay',
-        'Bug Reports': 'https://gitlab.com/BenSturmfels/python-securepay/-/issues',
+        'Source': 'https://github.com/BenSturmfels/python-securepay',
+        'Bug Reports': 'https://github.com/BenSturmfels/python-securepay/issues',
     }
 )
