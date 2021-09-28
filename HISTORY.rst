@@ -1,10 +1,12 @@
 Release History
 ---------------
 
-0.6.2 (2021-09-28)
+
+1.0.0 (2021-09-28)
 ++++++++++++++++++
 
- - Update project URLs
+ - Require Python 3.6.
+ - Switch to setup.cfg.
 
 
 0.6.0 (2016-10-29)

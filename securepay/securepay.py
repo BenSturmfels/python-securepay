@@ -43,13 +43,12 @@ http://www.securepay.com.au/resources/Secure_XML_API_Integration_Guide.pdf
 http://www.securepay.com.au/resources/SecurePay_Response_Codes.pdf
 
 """
-from future.standard_library import install_aliases
-install_aliases()
-
 import datetime
 import logging
 import re
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
 from lxml import etree
 from lxml.builder import E
@@ -63,10 +62,11 @@ REQUESTTYPE = "Payment"
 TXNTYPE_PAYMENT = "0"
 TXNTYPE_REFUND = "4"
 TXNSOURCE_SECURE_XML = "23"
-CURRENCY = "AUD" # amount is specified in cents
+CURRENCY = "AUD"  # amount is specified in cents
 GATEWAY_STATUS_CODE_NORMAL = '000'
 
 logger = logging.getLogger(__name__)
+
 
 class SecurePayError(Exception):
     """Represents a fatal error preventing processing of the payment."""
@@ -130,8 +130,10 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
     padded or not. We'll assume it is.
 
     """
-    timestamp = '%s%+04.f' % (timestamp.strftime("%Y%d%m%H%M%S000000"),
-                              timestamp.utcoffset().total_seconds() / 60)
+    timestamp = '{}{:+04.0f}'.format(
+        timestamp.strftime("%Y%d%m%H%M%S000000"),
+        timestamp.utcoffset().total_seconds() / 60,
+    )
 
     cents = str(cents)
 
@@ -168,13 +170,15 @@ def _pay_by_cc_xml(timestamp, cents, purchase_order_id, cc_number,
                         ID="1"),
                     count="1"))))
 
-    xml = etree.tostring(message, pretty_print=True, xml_declaration=True,
-                     encoding="UTF-8")
+    xml = etree.tostring(
+        message, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
     # Log XML with credit card number masked
-    logger.debug(re.sub(b'<cardNumber>(\d{6})\d{7}(\d{3})</cardNumber>',
-                     b'<cardNumber>\\1...\\2</cardNumber>',
-                     xml))
+    logger.debug(
+        re.sub(
+            br'<cardNumber>(\d{6})\d{7}(\d{3})</cardNumber>',
+            b'<cardNumber>\\1...\\2</cardNumber>',
+            xml))
 
     return xml
 
@@ -203,11 +207,12 @@ def refund(cents, purchase_order_id, transaction_id,
     return response
 
 
-def _refund_xml(timestamp, cents, purchase_order_id, transaction_id,
-                 merchant_id, password):
+def _refund_xml(timestamp, cents, purchase_order_id, transaction_id, merchant_id, password):
     """Generate XML for a SecurePay refund request."""
-    timestamp = '%s%+04.f' % (timestamp.strftime("%Y%d%m%H%M%S000000"),
-                              timestamp.utcoffset().total_seconds() / 60)
+    timestamp = '{}{:+04.0f}'.format(
+        timestamp.strftime("%Y%d%m%H%M%S000000"),
+        timestamp.utcoffset().total_seconds() / 60,
+    )
 
     cents = str(cents)
     purchase_order_id = str(purchase_order_id)
@@ -236,8 +241,8 @@ def _refund_xml(timestamp, cents, purchase_order_id, transaction_id,
                         ID="1"),
                     count="1"))))
 
-    return etree.tostring(message, pretty_print=True, xml_declaration=True,
-                     encoding="UTF-8")
+    return etree.tostring(
+        message, pretty_print=True, xml_declaration=True, encoding="UTF-8")
 
 
 def _parse_response(response_xml):
