@@ -14,10 +14,10 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
 
 setup(
     name='securepay',
-    version='0.6.0',
+    version='0.6.1',
     description='Interface to the Securepay credit card gateway.',
     long_description=long_description,
-    url='https://gitlab.com/Boojum/python-securepay',
+    url='https://github.com/BenSturmfels/python-securepay',
     author='Ben Sturmfels',
     author_email='ben@sturm.com.au',
     license='Apache License, Version 2.0',
@@ -37,4 +37,8 @@ setup(
         'lxml>=3.3.3',
         'future>=0.14.3',
     ],
+    project_urls={
+        'Source': 'https://gitlab.com/BenSturmfels/python-securepay',
+        'Bug Reports': 'https://gitlab.com/BenSturmfels/python-securepay/-/issues',
+    }
 )

@@ -1,12 +1,10 @@
 Release History
 ---------------
 
-Unreleased
-++++++++++
+0.6.1 (2021-09-28)
+++++++++++++++++++
 
-**Improvements**
-
- - Add GitLab continuous integration script to run tox tests.
+ - Update project URLs
 
 
 0.6.0 (2016-10-29)
